@@ -7,19 +7,24 @@ const GallerySection = () => {
 
   const images = [
     {
-      src: "https://drive.google.com/uc?id=1s4ZTO4LjeQfqZaLp1",
+      src: "/src/assets/kerozen-performance.jpg",
       alt: "Kerozen DJ en performance live",
       description: "Performance live électrisante"
     },
     {
-      src: "https://drive.google.com/uc?id=10EcnWgwDDp1m4pirx", 
-      alt: "Kerozen DJ en studio",
-      description: "Session studio créative"
+      src: "/src/assets/kerozen-formal.jpg", 
+      alt: "Kerozen DJ portrait professionnel",
+      description: "Portrait professionnel élégant"
     },
     {
-      src: "https://drive.google.com/uc?id=10sw3m3xztHafQXc1N",
-      alt: "Kerozen DJ portrait artistique",
-      description: "Portrait artistique"
+      src: "/src/assets/kerozen-interview.jpg",
+      alt: "Kerozen DJ en interview",
+      description: "Interview exclusive"
+    },
+    {
+      src: "/src/assets/kerozen-traditional.jpg",
+      alt: "Kerozen DJ style traditionnel",
+      description: "Style traditionnel africain"
     }
   ];
 
