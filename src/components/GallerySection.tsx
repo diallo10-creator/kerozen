@@ -25,6 +25,11 @@ const GallerySection = () => {
       src: "/src/assets/kerozen-traditional.jpg",
       alt: "Kerozen DJ style traditionnel",
       description: "Style traditionnel africain"
+    },
+    {
+      src: "/src/assets/kerozen-stage.jpg",
+      alt: "Kerozen DJ sur scène avec effets visuels",
+      description: "Spectacle live avec effets spéciaux"
     }
   ];
 

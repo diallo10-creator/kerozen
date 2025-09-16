@@ -7,16 +7,16 @@ const MusicSection = () => {
 
   const tracks = [
     {
-      title: "Hit Afrobeats #1",
-      url: "https://on.soundcloud.com/Te0RIsmW4UKF6GgIMl",
-      description: "Un son énergique qui fait danser toute l'Afrique",
-      genre: "Afrobeats"
+      title: "Mon Heure A Sonné",
+      url: "/audio/kerozen-mon-heure.m4a",
+      description: "Le dernier hit de Kerozen DJ",
+      genre: "Coupé-Décalé"
     },
     {
-      title: "Coupé-Décalé Vibes",
-      url: "https://on.soundcloud.com/5ZVcjtVAKElkWWKC4m", 
-      description: "Le rythme authentique de la Côte d'Ivoire",
-      genre: "Coupé-Décalé"
+      title: "C'est Son Temps",
+      url: "/audio/kerozen-son-temps.m4a",
+      description: "Un mélange explosif d'Afrobeats moderne",
+      genre: "Afrobeats"
     }
   ];
 
@@ -25,7 +25,9 @@ const MusicSection = () => {
       setCurrentPlaying(null);
     } else {
       setCurrentPlaying(index);
-      window.open(url, '_blank');
+      // Create audio element and play local file
+      const audio = new Audio(url);
+      audio.play().catch(console.error);
     }
   };
 
