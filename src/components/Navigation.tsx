@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Menu, X, Music, Image, Video, Phone } from 'lucide-react';
+import { Menu, X, Music, Image, Video, Phone, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { name: 'Accueil', href: '#home', icon: Music },
@@ -46,6 +49,25 @@ const Navigation = () => {
                 {item.name}
               </button>
             ))}
+            
+            {/* Auth Actions */}
+            {user ? (
+              <Button
+                variant="ghost"
+                onClick={signOut}
+                className="text-foreground hover:text-primary"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Déconnexion
+              </Button>
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -76,6 +98,29 @@ const Navigation = () => {
                   </button>
                 );
               })}
+              
+              {/* Mobile Auth Actions */}
+              {user ? (
+                <button
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center space-x-3 text-foreground hover:text-primary transition-colors duration-300 p-2 rounded-lg hover:bg-muted/10"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span className="font-medium">Déconnexion</span>
+                </button>
+              ) : (
+                <Link 
+                  to="/auth" 
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-3 text-foreground hover:text-primary transition-colors duration-300 p-2 rounded-lg hover:bg-muted/10"
+                >
+                  <LogIn className="w-5 h-5" />
+                  <span className="font-medium">Admin</span>
+                </Link>
+              )}
             </div>
           </div>
         )}

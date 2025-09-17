@@ -40,9 +40,20 @@ const Chatbot = () => {
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    // Input validation and sanitization
+    const sanitizedMessage = inputMessage.trim().slice(0, 500); // Limit message length
+    if (sanitizedMessage.length < 2) {
+      toast({
+        title: "Message trop court",
+        description: "Veuillez saisir un message plus long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputMessage,
+      text: sanitizedMessage,
       isBot: false,
       timestamp: new Date()
     };
@@ -53,7 +64,7 @@ const Chatbot = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('chatbot', {
-        body: { message: inputMessage }
+        body: { message: sanitizedMessage }
       });
 
       if (error) throw error;

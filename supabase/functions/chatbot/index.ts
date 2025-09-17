@@ -16,6 +16,26 @@ serve(async (req) => {
   try {
     const { message } = await req.json();
 
+    // Input validation and rate limiting
+    if (!message || typeof message !== 'string') {
+      return new Response(JSON.stringify({ 
+        error: 'Message invalide' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const sanitizedMessage = message.trim().slice(0, 500);
+    if (sanitizedMessage.length < 2) {
+      return new Response(JSON.stringify({ 
+        error: 'Message trop court' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -29,7 +49,7 @@ serve(async (req) => {
             role: 'system', 
             content: 'Tu es l\'assistant de DJ Kérozen, un artiste musical. Tu aides les visiteurs avec des informations sur ses concerts, sa musique, et comment le contacter. Réponds toujours en français et reste professionnel mais amical.'
           },
-          { role: 'user', content: message }
+          { role: 'user', content: sanitizedMessage }
         ],
         max_tokens: 150,
         temperature: 0.7,
