@@ -103,11 +103,11 @@ const ContactSection = () => {
 
       <div className="container mx-auto max-w-4xl relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6">
             <span className="gradient-text">Contactez-moi</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Prêt à faire vibrer votre événement ? Parlons de votre projet musical ! 
             Je suis disponible pour des collaborations, événements et prestations DJ.
           </p>
