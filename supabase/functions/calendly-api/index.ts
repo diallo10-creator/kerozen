@@ -44,7 +44,15 @@ serve(async (req) => {
     }
 
     const url = new URL(req.url)
-    const action = url.searchParams.get('action') || 'events'
+    let action = url.searchParams.get('action')
+    
+    // Also check the request body for action parameter
+    if (!action && req.method === 'POST') {
+      const body = await req.json()
+      action = body.action || 'events'
+    } else {
+      action = action || 'events'
+    }
 
     console.log(`Calendly API request - Action: ${action}`)
 

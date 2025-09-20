@@ -28,9 +28,7 @@ const CalendlySection = () => {
 
   const loadEventTypes = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('calendly-api', {
-        body: { action: 'event-types' }
-      });
+      const { data, error } = await supabase.functions.invoke('calendly-api?action=event-types');
 
       if (error) {
         console.error('Error fetching event types:', error);
