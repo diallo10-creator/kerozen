@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 declare global {
   interface Window {
@@ -6,12 +7,56 @@ declare global {
   }
 }
 
+interface CalendlyEventType {
+  uri: string;
+  name: string;
+  description_plain: string;
+  duration: number;
+  scheduling_url: string;
+}
+
 const CalendlySection = () => {
   const [isCalendlyLoaded, setIsCalendlyLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [eventTypes, setEventTypes] = useState<CalendlyEventType[]>([]);
+  const [selectedEventType, setSelectedEventType] = useState<string>('');
   const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    loadEventTypes();
+  }, []);
+
+  const loadEventTypes = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('calendly-api', {
+        body: { action: 'event-types' }
+      });
+
+      if (error) {
+        console.error('Error fetching event types:', error);
+        return;
+      }
+
+      if (data?.collection) {
+        setEventTypes(data.collection);
+        // Set default to consultation if available
+        const consultationEvent = data.collection.find((et: CalendlyEventType) => 
+          et.name.toLowerCase().includes('consultation')
+        );
+        if (consultationEvent) {
+          setSelectedEventType(consultationEvent.scheduling_url);
+        } else if (data.collection.length > 0) {
+          setSelectedEventType(data.collection[0].scheduling_url);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading event types:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedEventType) return;
+    
     let script: HTMLScriptElement | null = null;
 
     const loadCalendly = () => {
@@ -44,11 +89,14 @@ const CalendlySection = () => {
     const initializeWidget = () => {
       // Wait a bit for Calendly to be available
       setTimeout(() => {
-        if (window.Calendly && widgetRef.current) {
+        if (window.Calendly && widgetRef.current && selectedEventType) {
           try {
-            // Initialize the inline widget
+            // Clear previous widget
+            widgetRef.current.innerHTML = '';
+            
+            // Initialize the inline widget with selected event type
             window.Calendly.initInlineWidget({
-              url: 'https://calendly.com/kerozen-dj/consultation',
+              url: selectedEventType,
               parentElement: widgetRef.current,
               prefill: {},
               utm: {}
@@ -70,7 +118,7 @@ const CalendlySection = () => {
         script.parentElement.removeChild(script);
       }
     };
-  }, []);
+  }, [selectedEventType]);
 
   return (
     <section id="calendly" className="py-12 md:py-20 bg-background">
@@ -86,6 +134,26 @@ const CalendlySection = () => {
         </div>
         
         <div className="max-w-5xl mx-auto">
+          {/* Event Type Selector */}
+          {eventTypes.length > 1 && (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Type de rendez-vous
+              </label>
+              <select 
+                value={selectedEventType}
+                onChange={(e) => setSelectedEventType(e.target.value)}
+                className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {eventTypes.map((eventType) => (
+                  <option key={eventType.uri} value={eventType.scheduling_url}>
+                    {eventType.name} ({eventType.duration} min)
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          
           <div className="bg-card rounded-xl shadow-neon border border-border overflow-hidden">
             {/* Calendly Widget Container */}
             <div className="relative min-h-[600px] md:min-h-[700px]">
@@ -109,7 +177,7 @@ const CalendlySection = () => {
                       Vous pouvez prendre rendez-vous directement sur Calendly.
                     </p>
                     <a 
-                      href="https://calendly.com/kerozen-dj/consultation" 
+                      href={selectedEventType || "https://calendly.com/kerozen-dj/consultation"} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
@@ -136,7 +204,7 @@ const CalendlySection = () => {
             <p className="text-sm text-muted-foreground">
               Vous préférez ouvrir dans une nouvelle fenêtre ? 
               <a 
-                href="https://calendly.com/kerozen-dj/consultation" 
+                href={selectedEventType || "https://calendly.com/kerozen-dj/consultation"} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary/80 ml-1 underline transition-colors"
